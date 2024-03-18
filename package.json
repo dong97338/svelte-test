@@ -28,6 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"@material-tailwind/html": "^2.2.2",
+		"@sveltejs/adapter-vercel": "^5.1.1",
 		"@tailwindcss/typography": "^0.5.10",
 		"dotenv": "^16.4.5",
 		"openai": "^4.29.1"
