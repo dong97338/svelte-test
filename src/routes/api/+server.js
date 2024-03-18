@@ -109,7 +109,7 @@ export async function POST({request}) {
     //   frequency_penalty: 0,
     //   presence_penalty: 0
     // })
-    return new Response(JSON.stringify({output: 'response.choices[0].message.content'}), {status: 200, headers: {'Content-Type': 'application/json'}})
+    return new Response(JSON.stringify({output: process.env.OPENAI_API_KEY}), {status: 200, headers: {'Content-Type': 'application/json'}})
   } catch (error) {
     return new Response(JSON.stringify({error: 'OpenAI API 요청 실패'}), {status: 500, headers: {'Content-Type': 'application/json'}})
   }
