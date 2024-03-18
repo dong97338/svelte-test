@@ -1,7 +1,7 @@
 <script>
   import Markdown from '@magidoc/plugin-svelte-marked'
 
-  let input = ''
+  let input = '다진마늘, 참기름, 홍고추, 생크림, 간장, 멸치다시마육수, 감자, 우유, 양파, 대파, 설탕, 통깨, 고추장, 청양고추, 고춧가루, 두부, 버터'
   let output = ''
   let newItem = ''
   let mealType = ''
@@ -36,6 +36,7 @@
   }
 </script>
 
+<p>재료를 입력하세요!</p>
 <input bind:value={input} /> <button on:click={() => ++step}>다음</button>
 
 {#if step > 0}
