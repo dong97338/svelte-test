@@ -1,7 +1,6 @@
 import OpenAIApi from 'openai'
-import {config} from 'dotenv'
 
-config()
+require("dotenv").config()
 
 export const config = {
 	runtime: 'nodejs18.x'
