@@ -92,6 +92,7 @@ const messages = [
 export async function POST({request}) {
   const {text} = await request.json()
   const openai = new OpenAIApi({apiKey: process.env.OPENAI_API_KEY})
+  console.log(process.env.OPENAI_API_KEY)
 
   try {
     const response = await openai.chat.completions.create({
