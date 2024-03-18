@@ -96,20 +96,20 @@ const messages = [
 
 export async function POST({request}) {
   const {text} = await request.json()
-  const openai = new OpenAIApi({apiKey: process.env.OPENAI_API_KEY})
+  // const openai = new OpenAIApi({apiKey: process.env.OPENAI_API_KEY})
   console.log(process.env.OPENAI_API_KEY)
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [...messages, {role: 'user', content: text}],
-      temperature: 0,
-      max_tokens: 4095,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0
-    })
-    return new Response(JSON.stringify({output: response.choices[0].message.content}), {status: 200, headers: {'Content-Type': 'application/json'}})
+    // const response = await openai.chat.completions.create({
+    //   model: 'gpt-3.5-turbo',
+    //   messages: [...messages, {role: 'user', content: text}],
+    //   temperature: 0,
+    //   max_tokens: 4095,
+    //   top_p: 1,
+    //   frequency_penalty: 0,
+    //   presence_penalty: 0
+    // })
+    return new Response(JSON.stringify({output: 'response.choices[0].message.content'}), {status: 200, headers: {'Content-Type': 'application/json'}})
   } catch (error) {
     return new Response(JSON.stringify({error: 'OpenAI API 요청 실패'}), {status: 500, headers: {'Content-Type': 'application/json'}})
   }
