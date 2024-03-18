@@ -1,13 +1,12 @@
-import OpenAIApi from 'openai'
-import dotenv from 'dotenv'
-
-dotenv.config()
-
-export const config = {
-	runtime: 'nodejs18.x'
-};
-
-const messages = [
+import OpenAI from 'openai';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+ 
+import { env } from '$env/dynamic/private';
+// You may want to replace the above with a static private env variable
+// for dead-code elimination and build-time type-checking:
+// import { OPENAI_API_KEY } from '$env/static/private'
+ 
+const context = [
   {
     "role": "system",
     "content": "당신은 요리법을 제공하는 요리사입니다. \n\n사용자가 제공한 재료 목록과 식사 유형, 매운 음식 여부를 토대로 개인화된 요리와 그 재료 레시피를 제시합니다. 제외 음식은 빼고 추천합니다.\n\n- 레시피 섹션을 마지막으로 요약을 덧붙이지 마세요."
@@ -93,24 +92,28 @@ const messages = [
     "content": "# 웨지감자튀김\n감자를 굵게 썰어 바삭하게 튀겨낸 웨지감자는 스테디셀러 간식이자 안주로 꾸준한 사랑을 받고 있죠. 바삭하게 튀긴 웨지감자를 케찹이나 치즈소스에 콕 찍어 맥주 한 잔과 곁들이면 어느 호프집 부럽지 않은 홈술 한 상이 완성돼요.\n\n## 재료\n### 기본 재료\n- 킹감자: 2개(500g)\n- 파슬리가루: 약간\n\n### 가루 양념 재료\n- 튀김가루: 1/2컵\n- 소금: 약간\n- 후춧가루: 약간\n\n## 레시피\n### Step 1\n감자는 껍질째 깨끗이 씻은 후 웨지 모양으로 잘라주세요.\n\n### Step 2\n끓는 물에 감자를 넣어 8분 정도 삶아 체에 받쳐 물기를 빼주세요.\n\n### Step 3\n감자의 물기를 제거한 후 가루 양념 재료를 고루 묻혀주세요.\n\n### Step 4\n170도로 달군 기름에 튀겨 식힌 후 한 번 더 센 온도에서 바삭하게 튀겨주세요.\n\n### Step 5\n튀긴 감자에 기호에 따라 파슬리 가루를 뿌린 후 케찹이나 치즈소스 등을 곁들여 즐겨주세요."
   }
 ]
-
-export async function POST({request}) {
-  const {text} = await request.json()
-  // const openai = new OpenAIApi({apiKey: process.env.OPENAI_API_KEY})
-  console.log(process.env.OPENAI_API_KEY)
-
-  try {
-    // const response = await openai.chat.completions.create({
-    //   model: 'gpt-3.5-turbo',
-    //   messages: [...messages, {role: 'user', content: text}],
-    //   temperature: 0,
-    //   max_tokens: 4095,
-    //   top_p: 1,
-    //   frequency_penalty: 0,
-    //   presence_penalty: 0
-    // })
-    return new Response(JSON.stringify({output: process.env.OPENAI_API_KEY}), {status: 200, headers: {'Content-Type': 'application/json'}})
-  } catch (error) {
-    return new Response(JSON.stringify({error: 'OpenAI API 요청 실패'}), {status: 500, headers: {'Content-Type': 'application/json'}})
-  }
-}
+// Create an OpenAI API client
+const openai = new OpenAI({
+  apiKey: env.OPENAI_API_KEY || '',
+});
+ 
+export const POST = (async ({ request }) => {
+  // Extract the `prompt` from the body of the request
+  const {prompt} = await request.json();
+  console.log(prompt)
+ 
+  // Ask OpenAI for a streaming chat completion given the prompt
+  const response = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    stream: true,
+    messages: context.concat({
+      content: prompt,
+      role: "user",
+    }),
+  });
+ 
+  // Convert the response into a friendly text-stream
+  const stream = OpenAIStream(response);
+  // Respond with the stream
+  return new StreamingTextResponse(stream);
+})

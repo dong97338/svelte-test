@@ -1,32 +1,17 @@
 <script>
+  import { useCompletion } from 'ai/svelte';
   import Markdown from '@magidoc/plugin-svelte-marked'
+  const { completion, complete } = useCompletion();
 
   let input = '다진마늘, 참기름, 홍고추, 생크림, 간장, 멸치다시마육수, 감자, 우유, 양파, 대파, 설탕, 통깨, 고추장, 청양고추, 고춧가루, 두부, 버터'
-  let output = ''
   let newItem = ''
   let mealType = ''
   let spicyPreference = 'X'
   let items = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6', 'item 7', 'item 8', 'item 9', 'item 10']
   let step = 0
-  async function fetchAPI(text) {
-    text = `재료: ${text}\n식사 유형: ${mealType}\n매운 음식: ${spicyPreference}\n제외 음식:`
-    console.log(text)
-    const response = await fetch('/api', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({text})
-    })
-    if (response.ok) {
-      const data = await response.json()
-      output = data.output
-      console.log(data)
-    } else {
-      console.error('Failed to get the completion from OpenAI')
-    }
-  }
-  async function completion() {
+  function fetchAPI() {
+    complete(`재료: ${input}\n식사 유형: ${mealType}\n매운 음식: ${spicyPreference}\n제외 음식:`)
     items = input.split(',').map(item => item.trim())
-    fetchAPI(input)
   }
   function addItem() {
     if (newItem.trim() !== '') {
@@ -45,7 +30,7 @@
   {#if input.includes('고추') || input.includes('고춧가루')}
     <button on:click={() => ++step}>다음</button>
   {:else}
-    <button on:click={completion}>생성</button>
+    <button on:click={fetchAPI}>생성</button>
   {/if}
 {/if}
 
@@ -55,15 +40,15 @@
     <option value="O">O</option>
     <option value="X">X</option>
   </select>
-  <button on:click={completion}>생성</button>
+  <button on:click={fetchAPI}>생성</button>
 {/if}
 
 <br />
-{#if output}
+<!-- {#if $completion} -->
   <article class="prose max-w-none">
-    <Markdown source={output} />
+    <Markdown source={$completion} />
   </article>
-{/if}
+<!-- {/if} -->
 
 <div class="fixed top-1/2 right-5 transform -translate-y-1/2 bg-white shadow-md rounded-xl w-96">
   <nav class="flex max-h-[80vh] overflow-y-auto min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
