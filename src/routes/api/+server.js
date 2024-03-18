@@ -2,6 +2,11 @@ import OpenAIApi from 'openai'
 import {config} from 'dotenv'
 
 config()
+
+export const config = {
+	runtime: 'nodejs18.x'
+};
+
 const messages = [
   {
     "role": "system",
