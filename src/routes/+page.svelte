@@ -76,6 +76,6 @@
   <div class="mt-4 flex items-center justify-between p-2">
     <input class="mr-2 flex-1 rounded border p-2" type="text" bind:value={newItem} placeholder="Add new item..." />
     <button class="rounded border bg-blue-500 p-2 text-white" on:click={addItem}>Add</button>
-    <button class="ml-2 rounded border bg-green-500 p-2 text-white" on:click={async () => await fetchAPI(items.join(', '))}>Completion</button>
+    <button class="ml-2 rounded border bg-green-500 p-2 text-white" on:click={() => {input=items.join(', '),fetchAPI()}}>Completion</button>
   </div>
 </div>
