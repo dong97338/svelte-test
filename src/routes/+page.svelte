@@ -6,11 +6,12 @@
   let input = '다진마늘, 참기름, 홍고추, 생크림, 간장, 멸치다시마육수, 감자, 우유, 양파, 대파, 설탕, 통깨, 고추장, 청양고추, 고춧가루, 두부, 버터'
   let newItem = ''
   let mealType = ''
+  let amount = ''
   let spicyPreference = 'X'
   let items = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6', 'item 7', 'item 8', 'item 9', 'item 10']
   let step = 0
   function fetchAPI() {
-    complete(`재료: ${input}\n식사 유형: ${mealType}\n매운 음식: ${spicyPreference}\n제외 음식:`)
+    complete(`재료: ${input}\n식사 유형: ${mealType}\n매운 음식: ${spicyPreference}\n양: ${amount}\n제외 음식:`)
     items = input.split(',').map(item => item.trim())
   }
   function addItem() {
@@ -26,7 +27,17 @@
 
 {#if step > 0}
   <p>이 재료로 든든한 저녁식사용 요리를 만드실 계획이신가요, 아니면 간단한 아침식사용 요리 또는 술을 곁들일 안주나 밑반찬으로 생각하고 계신가요?</p>
-  <input bind:value={mealType} />
+  <input bind:value={mealType} /> <button on:click={() => ++step}>다음</button>
+{/if}
+
+{#if step > 1}
+  <p>몇 인분으로 만드실 건가요?</p>
+  <select id="amount" bind:value={amount}>
+    <option value="1인분">1인분</option>
+    <option value="2인분">2인분</option>
+    <option value="3인분">3인분</option>
+    <option value="4인분">4인분</option>
+  </select>
   {#if input.includes('고추') || input.includes('고춧가루')}
     <button on:click={() => ++step}>다음</button>
   {:else}
@@ -34,7 +45,8 @@
   {/if}
 {/if}
 
-{#if step == 2}
+
+{#if step > 2}
   <p>매운 것은 잘 먹나요?</p>
   <select id="spicyPreference" bind:value={spicyPreference}>
     <option value="O">O</option>
