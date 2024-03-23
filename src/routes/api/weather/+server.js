@@ -2,12 +2,13 @@ import OpenAI from 'openai'
 import {OpenAIStream, StreamingTextResponse} from 'ai'
 import {env} from '$env/dynamic/private'
 
-const getWeather = async (location, format) => {
-  let api_key = 'ab95f6f831fc796edc23c3819e416e7b'
-  let units = format === 'celsius' ? 'metric' : 'imperial'
-  return await fetch(`https://api.openweathermap.org/data/2.5/weather?appid=${api_key}&q=${location}&units=${units}`)
+const apiFunctions = {
+  async getWeather(location, format) {
+    let api_key = 'ab95f6f831fc796edc23c3819e416e7b'
+    let units = format === 'celsius' ? 'metric' : 'imperial'
+    return await fetch(`https://api.openweathermap.org/data/2.5/weather?appid=${api_key}&q=${location}&units=${units}`)
+  }
 }
-
 const context = [
   {
     role: 'system',
@@ -45,56 +46,56 @@ const openai = new OpenAI({
 })
 
 export const POST = async ({request}) => {
-  // const {prompt} = await request.json()
-  // console.log(prompt)
-
-  // const response = await openai.chat.completions.create({
-  //   model: 'gpt-3.5-turbo',
-  //   messages: context.concat({role: 'user', content: prompt}),
-  //   tools: tools,
-  //   temperature: 0,
-  //   max_tokens: 4095
-  // })
-  // let f = response.choices[0].message.tool_calls[0].function
-  // let arg = JSON.parse(f.arguments)
-  // console.log(`${f.name}('${arg.location}', '${arg.format}')`)
-  // let res = await eval(`${f.name}('${arg.location}', '${arg.format}')`)
-  // res = await res.json()
-  // let {temp, humidity} = res.main
-  // console.log(temp)
-  // console.log(humidity)
-
-  // const resres = await openai.chat.completions.create({
-  //   model: 'gpt-3.5-turbo',
-  //   stream: true,
-  //   messages: [
-  //     {role: 'system', content: '친절하게 이모지를 섞어서 답변해줘'},
-  //     {role: 'user', content: prompt},
-  //     {role: 'function', name: 'getWeather', content: `날씨: ${res.weather[0].description} 온도: ${temp}, 습도: ${humidity}`}
-  //   ],
-  //   tools: tools,
-  //   temperature: 0,
-  //   max_tokens: 4095
-  // })
-  // const stream = OpenAIStream(resres)
-  // return new StreamingTextResponse(stream)
   const {prompt} = await request.json()
   console.log(prompt)
 
-  // Ask OpenAI for a streaming chat completion given the prompt
   const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
-    stream: true,
-    messages: context.concat({
-      content: prompt,
-      role: 'user'
-    }),
+    messages: context.concat({role: 'user', content: prompt}),
+    tools: tools,
     temperature: 0,
     max_tokens: 4095
   })
+  let f = response.choices[0].message.tool_calls[0].function
+  let arg = JSON.parse(f.arguments)
+  console.log(`${f.name}('${arg.location}', '${arg.format}')`)
+  let res = await apiFunctions[f.name](arg.location, arg.format)
+  res = await res.json()
+  let {temp, humidity} = res.main
+  console.log(temp)
+  console.log(humidity)
 
-  // Convert the response into a friendly text-stream
-  const stream = OpenAIStream(response)
-  // Respond with the stream
+  const resres = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    stream: true,
+    messages: [
+      {role: 'system', content: '친절하게 이모지를 섞어서 답변해줘'},
+      {role: 'user', content: prompt},
+      {role: 'function', name: 'getWeather', content: `날씨: ${res.weather[0].description} 온도: ${temp}, 습도: ${humidity}`}
+    ],
+    tools: tools,
+    temperature: 0,
+    max_tokens: 4095
+  })
+  const stream = OpenAIStream(resres)
   return new StreamingTextResponse(stream)
+  // const {prompt} = await request.json()
+  // console.log(prompt)
+
+  // // Ask OpenAI for a streaming chat completion given the prompt
+  // const response = await openai.chat.completions.create({
+  //   model: 'gpt-3.5-turbo',
+  //   stream: true,
+  //   messages: context.concat({
+  //     content: prompt,
+  //     role: 'user'
+  //   }),
+  //   temperature: 0,
+  //   max_tokens: 4095
+  // })
+
+  // // Convert the response into a friendly text-stream
+  // const stream = OpenAIStream(response)
+  // // Respond with the stream
+  // return new StreamingTextResponse(stream)
 }
