@@ -78,5 +78,23 @@ export const POST = async ({request}) => {
   // })
   // const stream = OpenAIStream(resres)
   // return new StreamingTextResponse(stream)
-  return 'Hello, World!'
+  const {prompt} = await request.json()
+  console.log(prompt)
+
+  // Ask OpenAI for a streaming chat completion given the prompt
+  const response = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    stream: true,
+    messages: context.concat({
+      content: prompt,
+      role: 'user'
+    }),
+    temperature: 0,
+    max_tokens: 4095
+  })
+
+  // Convert the response into a friendly text-stream
+  const stream = OpenAIStream(response)
+  // Respond with the stream
+  return new StreamingTextResponse(stream)
 }
