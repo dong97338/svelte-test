@@ -70,7 +70,7 @@ export const POST = async ({request}) => {
     messages: [
       {role: 'system', content: '친절하게 이모지를 섞어서 답변해줘'},
       {role: 'user', content: prompt},
-      {role: 'function', name: 'getWeather', content: `온도: ${temp}, 습도: ${humidity}`}
+      {role: 'function', name: 'getWeather', content: `날씨: ${res.weather[0].description} 온도: ${temp}, 습도: ${humidity}`}
     ],
     tools: tools,
     temperature: 0,
