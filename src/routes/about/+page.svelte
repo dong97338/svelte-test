@@ -5,7 +5,7 @@
 
 <script>
   import {useCompletion} from 'ai/svelte'
-  const {completion, complete} = useCompletion({api: 'api/weather'})
+  const {completion, complete} = useCompletion({api: '/api/weather'})
   let input = '서울의 날씨를 알려줘'
 
 
