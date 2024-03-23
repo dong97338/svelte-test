@@ -45,37 +45,38 @@ const openai = new OpenAI({
 })
 
 export const POST = async ({request}) => {
-  const {prompt} = await request.json()
-  console.log(prompt)
+  // const {prompt} = await request.json()
+  // console.log(prompt)
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: context.concat({role: 'user', content: prompt}),
-    tools: tools,
-    temperature: 0,
-    max_tokens: 4095
-  })
-  let f = response.choices[0].message.tool_calls[0].function
-  let arg = JSON.parse(f.arguments)
-  console.log(`${f.name}('${arg.location}', '${arg.format}')`)
-  let res = await eval(`${f.name}('${arg.location}', '${arg.format}')`)
-  res = await res.json()
-  let {temp, humidity} = res.main
-  console.log(temp)
-  console.log(humidity)
+  // const response = await openai.chat.completions.create({
+  //   model: 'gpt-3.5-turbo',
+  //   messages: context.concat({role: 'user', content: prompt}),
+  //   tools: tools,
+  //   temperature: 0,
+  //   max_tokens: 4095
+  // })
+  // let f = response.choices[0].message.tool_calls[0].function
+  // let arg = JSON.parse(f.arguments)
+  // console.log(`${f.name}('${arg.location}', '${arg.format}')`)
+  // let res = await eval(`${f.name}('${arg.location}', '${arg.format}')`)
+  // res = await res.json()
+  // let {temp, humidity} = res.main
+  // console.log(temp)
+  // console.log(humidity)
 
-  const resres = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    stream: true,
-    messages: [
-      {role: 'system', content: '친절하게 이모지를 섞어서 답변해줘'},
-      {role: 'user', content: prompt},
-      {role: 'function', name: 'getWeather', content: `날씨: ${res.weather[0].description} 온도: ${temp}, 습도: ${humidity}`}
-    ],
-    tools: tools,
-    temperature: 0,
-    max_tokens: 4095
-  })
-  const stream = OpenAIStream(resres)
-  return new StreamingTextResponse(stream)
+  // const resres = await openai.chat.completions.create({
+  //   model: 'gpt-3.5-turbo',
+  //   stream: true,
+  //   messages: [
+  //     {role: 'system', content: '친절하게 이모지를 섞어서 답변해줘'},
+  //     {role: 'user', content: prompt},
+  //     {role: 'function', name: 'getWeather', content: `날씨: ${res.weather[0].description} 온도: ${temp}, 습도: ${humidity}`}
+  //   ],
+  //   tools: tools,
+  //   temperature: 0,
+  //   max_tokens: 4095
+  // })
+  // const stream = OpenAIStream(resres)
+  // return new StreamingTextResponse(stream)
+  return 'Hello, World!'
 }
