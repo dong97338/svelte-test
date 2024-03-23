@@ -1,6 +1,5 @@
 import OpenAI from 'openai'
 import {OpenAIStream, StreamingTextResponse} from 'ai'
-
 import {env} from '$env/dynamic/private'
 // You may want to replace the above with a static private env variable
 // for dead-code elimination and build-time type-checking:
